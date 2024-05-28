@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  guix-build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Guix
+      run: sudo apt-get install -y guix make
+    - uses: actions/checkout@v3
+    - name: Test
+      run: make test
+    - name: Build
+      run: guix time-machine -c$(nproc) -M 8 -- build -f guix.scm -c$(nproc) -M 8

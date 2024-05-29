@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   guix-build:
@@ -16,4 +16,4 @@ jobs:
     - name: Test
       run: make test
     - name: Build
-      run: guix time-machine -c$(nproc) -M 8 -- build -f guix.scm -c$(nproc) -M 8
+      run: guix build -f guix.scm

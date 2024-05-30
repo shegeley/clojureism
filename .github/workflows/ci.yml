@@ -15,7 +15,7 @@ jobs:
     - name: Install Guix
       uses: PromyLOPh/guix-install-action@v1.5
     - name: Install GNU Make
-      run: sudo guix install make
+      run: guix install make
     - name: Test
       run: make test
     - name: Build

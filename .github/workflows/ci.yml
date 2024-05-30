@@ -19,4 +19,4 @@ jobs:
     - name: Test
       run: make test
     - name: Build
-      run: guix build -f guix.scm
+      run: make build

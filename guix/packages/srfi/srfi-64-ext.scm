@@ -1,13 +1,13 @@
-(use-modules
- (guix gexp)
- ((guix licenses) #:prefix license:)
- (guix packages)
- (guix git-download)
- (guix download)
- (guix utils)
- (guix build-system guile)
- (gnu packages guile)
- (gnu packages package-management))
+(define-module (packages srfi srfi-64-ext)
+ #:use-module (guix gexp)
+ #:use-module ((guix licenses) #:prefix license:)
+ #:use-module (guix packages)
+ #:use-module (guix git-download)
+ #:use-module (guix download)
+ #:use-module (guix utils)
+ #:use-module (guix build-system guile)
+ #:use-module (gnu packages guile)
+ #:use-module (gnu packages package-management))
 
 (define-public guile-srfi-64-ext
  (package
@@ -29,4 +29,4 @@
   (license license:gpl3+)
   (home-page "https://github.com/shegeley/srfi-64-ext")))
 
- guile-srfi-64-ext
+guile-srfi-64-ext

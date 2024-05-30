@@ -2,8 +2,6 @@
  #:use-module (clojureism associative)
  #:use-module (clojureism atomic)
 
- #:replace (assoc)
-
  #:re-export (get get-in
               assoc assoc-in
               update update-in

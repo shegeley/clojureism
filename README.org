@@ -13,7 +13,6 @@ The operations are:
 - ref, swap!, reset! (atomic)
 - bonuses:
   + clojure-alike hash-table printer (it's enabled by default when requiring ~(clojureism)~ module)
-  + fast ~hash-table-compare~ in ~(clojureism hash-table)~
 
 The main difference is that in get/get-in procedures ~#f~ will be returned instead of ~nil~.
 ** TODOS

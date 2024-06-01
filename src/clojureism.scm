@@ -7,4 +7,4 @@
               update update-in
               ref reset! swap!
               set-hash-table-printer! table-printer
-              copy set* make associative?))
+              associative?))

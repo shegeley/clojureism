@@ -135,6 +135,21 @@ Bonus: clojure-alike hash-table printer.")
    (license license:gpl3+)
    (home-page "https://github.com/shegeley/clojureism"))))
 #+end_src
+** Examples
+- Basic:
+    #+begin_src scheme
+
+    (use-modules
+    (srfi srfi-125)
+    (srfi srfi-128))
+
+    (alist->hash-table `((a . 1) (b . 2)) equal?)
+
+    (hash-table=? (make-default-comparator)
+    (alist->hash-table `((a . 1) (b . 2)) equal?)
+    (alist->hash-table `((b . 2) (a . 1)) equal?))
+    #+end_src
+- Advanced: see ~tests~ directory
 ** TODOS
 *** TODO Watches for atomic: ~add-watch~, ~remove-watch~,
 ** On guile scheme hashtables

@@ -20,6 +20,9 @@ repl:
 build:
 	guix build -f guix.scm -L guix
 
+install:
+	guix install -f guix.scm -L guix
+
 test:
 	guix shell \
 	-L guix \

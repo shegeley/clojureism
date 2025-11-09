@@ -2,14 +2,14 @@
  (gnu packages guile)
 
  ((guix licenses) #:prefix license:)
+ ((guix packages guile-xyz) #:select (guile-srfi-125))
+
  (guix build-system guile)
  (guix download)
  (guix gexp)
  (guix git-download)
  (guix packages)
- (guix utils)
-
- (packages srfi srfi-125))
+ (guix utils))
 
 (define %source-dir (dirname (current-filename)))
 

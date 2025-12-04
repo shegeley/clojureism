@@ -6,6 +6,10 @@
 
  #:use-module (srfi srfi-125) ;; advanced hash-tables
 
+ ;; 'immutable' hash-tables
+ #:use-module ((srfi srfi-126) #:select (make-eq-hashtable
+                                         make-eqv-hashtable))
+
  #:replace (assoc)
 
  #:export (get get-in
@@ -95,3 +99,24 @@
  (match args
   ((ks1 f1) (let [(v (get-in x ks1))] (assoc-in x ks1 (f1 v))))
   ((ks1 f1 rest ...) (apply update-in (update-in x ks1 f1) rest))))
+
+(define table* (make-eq-hashtable)) ;; makle
+(hash-table-mutable? table*)
+;; it's not possible to create immutable hashtable right away. only with 'hashtable-copy' mechanism. see https://srfi.schemers.org/srfi-126/srfi-126.html
+(hash-table-mutable? (hashtable-copy table* #f))
+
+(define (alist->hash-table* alist)
+ (alist->hash-table alist equal?))
+
+(define (hash-table=?* ht1 ht2)
+ (hash-table=? (make-default-comparator) ht1 ht2))
+
+(define table**
+ (alist->hash-table*
+  `((hello . world)
+    (nested . ,(alist->hash-table*
+                `((key1 . val1)
+                  (key2 . ,(alist->hash-table*
+                            `((key1- . val1-))))))))))
+
+(hash-table-mutable? table**)

@@ -4,17 +4,20 @@ The point of this small libriary is to mimic clojure's basic operations on data 
 The structures are:
 - vector [clojure] <-> vector [scheme]
 - hash-map [clojure] <-> srfi-125* hash-table [scheme]
+- record [clojure defrecord] <-> goops object [scheme] (slots accessed by name)
 - atom [clojure] <-> ice-9 atomic [scheme]
 
 The operations are:
-- get, get-in (vector, hash-table)
-- assoc, assoc-in (vector, hash-table)
-- update, update-in (vector, hash-table)
+- get, get-in (vector, hash-table, goops object)
+- assoc, assoc-in (vector, hash-table, goops object)
+- update, update-in (vector, hash-table, goops object)
 - ref, swap!, reset! (atomic)
 - bonuses:
   + clojure-alike hash-table printer (it's enabled by default when requiring ~(clojureism)~ module)
 
 The main difference is that in get/get-in procedures ~#f~ will be returned instead of ~nil~.
+
+For goops objects slots are addressed by their symbol name: ~(get obj 'slot)~, ~(assoc obj 'slot val)~. As with the other structures, ~assoc~/~assoc-in~ are functional --- they return a ~shallow-clone~ with the slot updated and leave the original untouched.
 ** Installation
 Caveat: ~clojureism~ depends on srfi-125 (which depends on srfi-126) that's still not in guix upstream. I'm working on it.
 
@@ -112,8 +115,8 @@ Options:
    (license license:expat))))
 
 (define-public clojureism
- (let [(version "0.0.2")
-       (hash "0pjr0m937kz1skx1yivwnpjfqg3jppsv19pyzlfd6skcs0dq6790")]
+ (let [(version "0.0.3")
+       (hash "0w3l5bpjx3nchbqc71r01qpj7r6mpgcwrnn5mp9kggvxlszd53qa")]
   (package
    (name "clojureism")
    (version version)
@@ -127,10 +130,10 @@ Options:
    (arguments (list #:source-directory "src"))
    (propagated-inputs (list guile-srfi-125))
    (native-inputs (list guile-3.0))
-   (synopsis "Small guile scheme libriary to provide clojure-alike atom, vector and hash-map basic procedures")
+   (synopsis "Small guile scheme libriary to provide clojure-alike atom, vector, hash-map and goops-object basic procedures")
    (description "The point of this small libriary is to mimic clojure's basic operations on data structures with guile scheme as close as possible.
-Structures correspondence: vector [clojure] <-> vector [scheme], hash-map [clojure] <-> srfi-125 hash-table [scheme], atom [clojure] <-> ice-9 atomic [scheme].
-Operations: get, get-in (vector, hash-table); assoc, assoc-in (vector, hash-table); update, update-in (vector, hash-table); ref, swap!, reset! (atomic).
+Structures correspondence: vector [clojure] <-> vector [scheme], hash-map [clojure] <-> srfi-125 hash-table [scheme], record [clojure] <-> goops object [scheme], atom [clojure] <-> ice-9 atomic [scheme].
+Operations: get, get-in (vector, hash-table, goops object); assoc, assoc-in (vector, hash-table, goops object); update, update-in (vector, hash-table, goops object); ref, swap!, reset! (atomic).
 Bonus: clojure-alike hash-table printer.")
    (license license:gpl3+)
    (home-page "https://github.com/shegeley/clojureism"))))

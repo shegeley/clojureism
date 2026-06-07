@@ -2,7 +2,7 @@
  (gnu packages guile)
 
  ((guix licenses) #:prefix license:)
- ((guix packages guile-xyz) #:select (guile-srfi-125))
+ ((gnu packages guile-xyz) #:select (guile-srfi-125))
 
  (guix build-system guile)
  (guix download)

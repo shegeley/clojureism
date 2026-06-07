@@ -1,21 +1,17 @@
+time-machine = guix time-machine -C lock.scm --
+
+shell-default-args = guile-next guile-ares-rs
+
+guile-args = -L src -L tests
+
 nrepl:
-	guix shell \
-	-L guix \
-	-f guix.scm \
-	guile \
-	guile-ares-rs \
-	-L guix \
-	-- guile \
-	-c "((@ (nrepl server) run-nrepl-server) #:port 7888)"
+	${time-machine} shell ${shell-default-args} -- \
+		guile ${guile-args} \
+		-c "((@ (ares server) run-nrepl-server) #:port 7888)"
 
 repl:
-	guix shell \
-	-L guix \
-	-f guix.scm \
-	guile \
-	guile-ares-rs \
-	-L guix \
-	-- guile
+	${time-machine} shell ${shell-default-args} -- \
+		guile ${guile-args}
 
 build:
 	guix build -f guix.scm -L guix
@@ -24,13 +20,5 @@ install:
 	guix install -f guix.scm -L guix
 
 test:
-	guix shell \
-	-L guix \
-	-f guix/packages/srfi/srfi-64-ext.scm \
-	-f guix.scm \
-	guile \
-	--rebuild-cache \
-	-- guile \
-	-L src \
-	-L tests \
-	-l test-runner.scm
+	${time-machine} shell ${shell-default-args} -- \
+		guile ${guile-args} -s tests.scm

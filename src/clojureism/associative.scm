@@ -6,6 +6,12 @@
 
  #:use-module (srfi srfi-125) ;; advanced hash-tables
 
+ #:use-module ((oop goops) #:select (slot-ref slot-set!
+                                     slot-bound? slot-exists?
+                                     shallow-clone
+                                     class-of is-a? <object>
+                                     (make . make-instance)))
+
  #:replace (assoc)
 
  #:export (get get-in
@@ -26,28 +32,36 @@
 
 (set-record-type-printer! hash-table-type table-printer)
 
-(define (associative? x) (or (hash-table? x) (vector? x)))
+(define (goops? x) (is-a? x <object>))
+
+(define (associative? x) (or (hash-table? x) (vector? x) (goops? x)))
 
 (define (copy x)
  (cond
   ((vector? x) (vector-copy x))
   ;; #t for mutability
-  ((hash-table? x) (hash-table-copy x #t))))
+  ((hash-table? x) (hash-table-copy x #t))
+  ((goops? x) (shallow-clone x))))
 
 (define (set* x key val)
  (cond
   ((vector? x) (vector-set! x key val))
-  ((hash-table? x) (hash-table-set! x key val))))
+  ((hash-table? x) (hash-table-set! x key val))
+  ((goops? x) (slot-set! x key val))))
 
 (define (make x)
  (cond
   ((vector? x) (vector))
-  ((hash-table? x) (hash-table equal?))))
+  ((hash-table? x) (hash-table equal?))
+  ((goops? x) (make-instance (class-of x)))))
 
 (define* (ref x k #:optional (alt #f))
  (cond
   ((vector? x) (vector-ref x k))
-  ((hash-table? x) (hash-table-ref/default x k alt))))
+  ((hash-table? x) (hash-table-ref/default x k alt))
+  ((goops? x) (if (and (slot-exists? x k) (slot-bound? x k))
+                  (slot-ref x k)
+                  alt))))
 
 (define (mutable? x)
  (cond

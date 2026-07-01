@@ -12,8 +12,12 @@ jobs:
     steps:
     - name: Git checkout
       uses: actions/checkout@v4
+    # Ubuntu 24.04 (ubuntu-latest) restricts unprivileged user namespaces via
+    # AppArmor, which prevents guix-daemon from starting. Relax it before install.
+    - name: Permit unprivileged user namespaces
+      run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
     - name: Install Guix
-      uses: PromyLOPh/guix-install-action@v1.5
+      uses: PromyLOPh/guix-install-action@v1.6
     - name: Install GNU Make
       run: guix install make
     - name: Test

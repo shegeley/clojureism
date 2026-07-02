@@ -1,6 +1,6 @@
 time-machine = guix time-machine -C lock.scm --
 
-shell-default-args = guile-next guile-ares-rs
+shell-default-args = guile-next guile-ares-rs guile-srfi-125
 
 guile-args = -L src -L tests
 

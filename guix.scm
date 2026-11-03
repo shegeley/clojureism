@@ -16,7 +16,7 @@
 (define-public clojureism
   (package
     (name "clojureism")
-    (version "0.1")
+    (version "0.0.4")
     (source (local-file %source-dir
               #:recursive? #t
               #:select? (git-predicate %source-dir)))

@@ -1,9 +1,9 @@
 (define-module (clojureism atomic-test)
-  #:use-module ((ares suitbl) #:select (define-suite test is))
+ #:use-module ((ares suitbl) #:select (define-suite test is))
 
-  #:use-module ((clojureism atomic) #:select (ref reset! swap!))
+ #:use-module ((clojureism atomic) #:select (ref reset! swap!))
 
-  #:use-module ((ice-9 atomic) #:select (make-atomic-box)))
+ #:use-module ((ice-9 atomic) #:select (make-atomic-box)))
 
 (define-suite clojureism/atomic
 

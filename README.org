@@ -11,6 +11,7 @@ The operations are:
 - get, get-in (vector, hash-table, goops object)
 - assoc, assoc-in (vector, hash-table, goops object)
 - update, update-in (vector, hash-table, goops object)
+- set*, set-in*, merge* (mutating associative updates)
 - ref, swap!, reset! (atomic)
 - bonuses:
   + clojure-alike hash-table printer (it's enabled by default when requiring ~(clojureism)~ module)
@@ -18,6 +19,12 @@ The operations are:
 The main difference is that in get/get-in procedures ~#f~ will be returned instead of ~nil~.
 
 For goops objects slots are addressed by their symbol name: ~(get obj 'slot)~, ~(assoc obj 'slot val)~. As with the other structures, ~assoc~/~assoc-in~ are functional --- they return a ~shallow-clone~ with the slot updated and leave the original untouched.
+** Mutation
+All return the mutated target.
+- ~set*~: key/value pairs.
+- ~set-in*~: nested path/value pairs.
+- ~merge*~: recursive alist/hash-table patches.
+
 ** Installation
 Caveat: ~clojureism~ depends on srfi-125 (which depends on srfi-126) that's still not in guix upstream. I'm working on it.
 

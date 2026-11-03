@@ -1,16 +1,16 @@
 (define-module (clojureism associative-test)
-  #:use-module ((ares suitbl) #:select (define-suite test is throws-exception?))
+ #:use-module ((ares suitbl) #:select (define-suite test is throws-exception?))
 
-  #:use-module ((clojureism associative) #:select (get get-in
-                                                   assoc assoc-in
-                                                   update update-in))
+ #:use-module ((clojureism associative) #:select (get get-in
+                                                  assoc assoc-in
+                                                  update update-in))
 
-  #:use-module (oop goops)
+ #:use-module (oop goops)
 
-  #:use-module ((srfi srfi-125) #:select (make-hash-table
-                                          alist->hash-table
-                                          hash-table=?))
-  #:use-module ((srfi srfi-128) #:select (make-default-comparator)))
+ #:use-module ((srfi srfi-125) #:select (make-hash-table
+                                         alist->hash-table
+                                         hash-table=?))
+ #:use-module ((srfi srfi-128) #:select (make-default-comparator)))
 
 (define (alist->hash-table* alist)
   (alist->hash-table alist equal?))

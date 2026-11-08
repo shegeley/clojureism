@@ -170,13 +170,22 @@ sources before writing. Updates are sequential, without rollback on errors."
   ((hash-table? x) (hash-table equal?))
   ((goops? x) (make-instance (class-of x)))))
 
+(define (alist-ref/default x k alt)
+  "Read @var{k} from alist @var{x}, @var{alt} when absent --- the read side of the alist support @code{set-path!}/@code{merge-value!} already had on write paths.  Uses @code{equal?}, like the hash-table branch.  Not @code{assoc}: this module redefines it below."
+  (match x
+    (() alt)
+    (((key . value) . rest)
+     (if (equal? key k) value (alist-ref/default rest k alt)))
+    (_ alt)))
+
 (define* (ref x k #:optional (alt #f))
  (cond
   ((vector? x) (vector-ref x k))
   ((hash-table? x) (hash-table-ref/default x k alt))
   ((goops? x) (if (and (slot-exists? x k) (slot-bound? x k))
                   (slot-ref x k)
-                  alt))))
+                  alt))
+  ((alist? x) (alist-ref/default x k alt))))
 
 (define (mutable? x)
  (cond

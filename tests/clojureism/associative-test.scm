@@ -56,6 +56,17 @@
     (is (equal? 3 (get (vector*) 100 3)))
     (is (throws-exception? (get (vector*) 100))))
 
+  (test "get/alist"
+    (is (equal? 2 (get '((a . 1) (b . 2)) 'b)))
+    (is (equal? "s" (get '(("k" . "s")) "k")))
+    (is (equal? #f (get '((a . 1)) 'z)))
+    (is (equal? 100 (get '((a . 1)) 'z 100)))
+    (is (equal? #f (get '() 'z))))
+
+  (test "get-in/alist"
+    (is (equal? 'deep (get-in '((a . ((b . ((c . deep)))))) '(a b c))))
+    (is (equal? #f (get-in '((a . ((b . 1)))) '(a z c)))))
+
   (test "get-in/hash-table"
     (is (equal? 'val1- (get-in (table**) '(nested key2 key1-))))
     (is (equal? #f (get-in (table**) '(nested key2 #f)))))

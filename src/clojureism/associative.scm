@@ -194,8 +194,9 @@ sources before writing. Updates are sequential, without rollback on errors."
   ((hash-table? x) #f)))
 
 (define (alist-set entries key value)
- "Return ENTRIES with KEY mapped to VALUE, comparing keys with @code{equal?}.
-Replace the existing entry in place or append a new one; entry order is preserved."
+ "Return @var{entries} with @var{key} mapped to @var{value}, comparing keys
+with @code{equal?}.  Replace the existing entry in place or append a new one;
+entry order is preserved."
  (match entries
    (() (list (cons key value)))
    (((k . v) . rest)
@@ -204,16 +205,18 @@ Replace the existing entry in place or append a new one; entry order is preserve
         (cons (cons k v) (alist-set rest key value))))))
 
 (define (assoc-alist x args)
+ "Apply the key/value pairs of @var{args} to alist @var{x}; see @code{assoc}."
  (require-pairs args)
  (match args
    (() x)
    ((key value . rest) (assoc-alist (alist-set x key value) rest))))
 
 (define (assoc x . args)
- "Return a copy of @var{x} with key/value pairs assigned in order.
-@var{x} may be a vector, SRFI-125 hash table, GOOPS object, or alist.
-Alists update functionally: the input is left untouched, existing entries
-keep their positions and new keys are appended. Later values for a key win."
+ "Return a copy of @var{x} with the key/value pairs of @var{args} assigned
+in order.  @var{x} may be a vector, SRFI-125 hash table, GOOPS object, or
+alist.  Alists update functionally: the input is left untouched, existing
+entries keep their positions and new keys are appended.  Later values for
+a key win."
  (if (alist? x)
      (assoc-alist x args)
      (apply set* (copy x) args)))
@@ -230,11 +233,11 @@ keep their positions and new keys are appended. Later values for a key win."
   ((k rest ...) (let [(x1 (get x k))] (if x1 (get-in x1 rest) #f)))))
 
 (define (assoc-in x . args)
- "Assign path/value pairs to a copy of @var{x} and return it.
-Paths are non-empty proper key lists. Nested values may mix vectors,
-SRFI-125 hash tables, GOOPS objects, and alists; each branch keeps its
-own representation. Missing or scalar branches become a fresh structure
-of the parent's kind."
+ "Assign path/value pairs from @var{args} to a copy of @var{x} and return it.
+Paths are non-empty proper key lists.  Nested values may mix vectors,
+SRFI-125 hash tables, GOOPS objects, and alists; each branch keeps its own
+representation.  Missing or scalar branches become a fresh structure of the
+parent's kind."
  (match args
   ((ks1 val1)
    (match ks1

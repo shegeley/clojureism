@@ -7,10 +7,12 @@ The structures are:
 - record [clojure defrecord] <-> goops object [scheme] (slots accessed by name)
 - atom [clojure] <-> ice-9 atomic [scheme]
 
+Alists are supported as a native scheme structure: get/get-in read them, and assoc/assoc-in/update/update-in update them functionally, preserving entry order and the alist representation at every nesting level (mixed alist/hash-table/goops graphs keep each branch's own type).
+
 The operations are:
-- get, get-in (vector, hash-table, goops object)
-- assoc, assoc-in (vector, hash-table, goops object)
-- update, update-in (vector, hash-table, goops object)
+- get, get-in (vector, hash-table, goops object, alist)
+- assoc, assoc-in (vector, hash-table, goops object, alist)
+- update, update-in (vector, hash-table, goops object, alist)
 - set*, set-in*, merge* (mutating associative updates)
 - ref, swap!, reset! (atomic)
 - bonuses:

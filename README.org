@@ -21,6 +21,8 @@ The operations are:
 The main difference is that in get/get-in procedures ~#f~ will be returned instead of ~nil~.
 
 For goops objects slots are addressed by their symbol name: ~(get obj 'slot)~, ~(assoc obj 'slot val)~. As with the other structures, ~assoc~/~assoc-in~ are functional --- they return a ~shallow-clone~ with the slot updated and leave the original untouched.
+
+Internal slots named with the scheme ~%~ convention resolve through their plain symbolic name: ~(get obj 'identity)~ reads the ~%identity~ slot. An exact slot name always wins over the ~%~-fallback, so ~(get obj '%identity)~ works too. The fallback applies to every operation that addresses slots (~get~, ~get-in~, ~set*~, ~assoc~, ~assoc-in~, ~update~, ~update-in~).
 ** Mutation
 All return the mutated target.
 - ~set*~: key/value pairs.

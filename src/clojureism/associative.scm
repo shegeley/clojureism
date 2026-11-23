@@ -37,6 +37,16 @@
 
 (define (associative? x) (or (hash-table? x) (vector? x) (goops? x)))
 
+(define (resolve-slot x k)
+ "Return the slot name of GOOPS object @var{x} addressed by key @var{k}:
+@var{k} itself when it names a slot, otherwise the @code{%}-prefixed
+@var{k} (the Scheme convention for internal slots).  Return @code{#f}
+when neither names a slot."
+ (cond ((slot-exists? x k) k)
+       ((and (symbol? k) (slot-exists? x (symbol-append '% k)))
+        (symbol-append '% k))
+       (else #f)))
+
 (define (copy x)
  (cond
   ((vector? x) (vector-copy x))
@@ -65,7 +75,9 @@
  (cond
   ((vector? x) (vector-set! x key val))
   ((hash-table? x) (hash-table-set! x key val))
-  ((goops? x) (slot-set! x key val))))
+  ((goops? x) (slot-set! x (or (resolve-slot x key)
+                               (error "No such GOOPS slot" key x))
+                       val))))
 
 (define (set* x . args)
  "Assign key/value pairs to @var{x} in order and return @var{x}.
@@ -183,9 +195,10 @@ sources before writing. Updates are sequential, without rollback on errors."
  (cond
   ((vector? x) (vector-ref x k))
   ((hash-table? x) (hash-table-ref/default x k alt))
-  ((goops? x) (if (and (slot-exists? x k) (slot-bound? x k))
-                  (slot-ref x k)
-                  alt))
+  ((goops? x) (let ((slot (resolve-slot x k)))
+               (if (and slot (slot-bound? x slot))
+                   (slot-ref x slot)
+                   alt)))
   ((alist? x) (alist-ref/default x k alt))))
 
 (define (mutable? x)

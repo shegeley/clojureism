@@ -3,7 +3,8 @@
 
  #:use-module ((clojureism associative) #:select (get get-in
                                                   assoc assoc-in
-                                                  update update-in))
+                                                  update update-in
+                                                  set*))
 
  #:use-module (oop goops)
 
@@ -35,6 +36,14 @@
   (x    #:init-keyword #:x    #:init-value 0)
   (y    #:init-keyword #:y    #:init-value 0)
   (meta #:init-keyword #:meta #:init-value #f))
+
+(define-class <account> ()
+  (%secret #:init-keyword #:secret #:init-value #f)
+  (name #:init-keyword #:name #:init-value #f))
+
+(define-class <shadowed> ()
+  (value #:init-value 'public)
+  (%value #:init-value 'private))
 
 (define-suite clojureism/associative
 
@@ -153,6 +162,30 @@
     (let ((p (make <point> #:x 3 #:y 4)))
       (is (equal? 4 (get (update p 'x 1+) 'x)))
       (is (equal? 3 (get p 'x)))))
+
+  ;; %-prefixed internal slots resolve through their plain symbolic name;
+  ;; an exact slot name always wins over the %-fallback
+
+  (test "get/goops %-slot fallback"
+    (let ((a (make <account> #:secret "s3cret" #:name 'bob)))
+      (is (equal? "s3cret" (get a 'secret)))
+      (is (equal? "s3cret" (get a '%secret)))
+      (is (equal? 'bob (get a 'name)))
+      (is (equal? #f (get a 'missing))))
+    (is (equal? 'public (get (make <shadowed>) 'value)))
+    (is (equal? 'private (get (make <shadowed>) '%value))))
+
+  (test "set*/goops %-slot fallback"
+    (let ((a (make <account> #:secret "old")))
+      (is (eq? a (set* a 'secret "new")))
+      (is (equal? "new" (get a '%secret)))
+      (is (throws-exception? (set* a 'missing 1)))))
+
+  (test "assoc/goops %-slot fallback stays functional"
+    (let* ((a (make <account> #:secret "old"))
+           (b (assoc a 'secret "new")))
+      (is (equal? "new" (get b 'secret)))
+      (is (equal? "old" (get a '%secret)))))
 
   ;; alist write support: assoc/assoc-in/update/update-in update alists
   ;; functionally, keeping alist representation and entry order

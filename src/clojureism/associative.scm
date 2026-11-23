@@ -168,6 +168,7 @@ sources before writing. Updates are sequential, without rollback on errors."
  (cond
   ((vector? x) (vector))
   ((hash-table? x) (hash-table equal?))
+  ((alist? x) '())
   ((goops? x) (make-instance (class-of x)))))
 
 (define (alist-ref/default x k alt)
@@ -192,8 +193,30 @@ sources before writing. Updates are sequential, without rollback on errors."
   ((vector? x) #t)
   ((hash-table? x) #f)))
 
+(define (alist-set entries key value)
+ "Return ENTRIES with KEY mapped to VALUE, comparing keys with @code{equal?}.
+Replace the existing entry in place or append a new one; entry order is preserved."
+ (match entries
+   (() (list (cons key value)))
+   (((k . v) . rest)
+    (if (equal? k key)
+        (cons (cons key value) rest)
+        (cons (cons k v) (alist-set rest key value))))))
+
+(define (assoc-alist x args)
+ (require-pairs args)
+ (match args
+   (() x)
+   ((key value . rest) (assoc-alist (alist-set x key value) rest))))
+
 (define (assoc x . args)
- (apply set* (copy x) args))
+ "Return a copy of @var{x} with key/value pairs assigned in order.
+@var{x} may be a vector, SRFI-125 hash table, GOOPS object, or alist.
+Alists update functionally: the input is left untouched, existing entries
+keep their positions and new keys are appended. Later values for a key win."
+ (if (alist? x)
+     (assoc-alist x args)
+     (apply set* (copy x) args)))
 
 (define* (get x k #:optional (alt #f))
  (with-exception-handler
@@ -207,6 +230,11 @@ sources before writing. Updates are sequential, without rollback on errors."
   ((k rest ...) (let [(x1 (get x k))] (if x1 (get-in x1 rest) #f)))))
 
 (define (assoc-in x . args)
+ "Assign path/value pairs to a copy of @var{x} and return it.
+Paths are non-empty proper key lists. Nested values may mix vectors,
+SRFI-125 hash tables, GOOPS objects, and alists; each branch keeps its
+own representation. Missing or scalar branches become a fresh structure
+of the parent's kind."
  (match args
   ((ks1 val1)
    (match ks1
@@ -214,7 +242,8 @@ sources before writing. Updates are sequential, without rollback on errors."
     ((k rest ...)
      (let [(val (get x k))]
       (cond
-       ((associative? val) (assoc x k (assoc-in val rest val1)))
+       ((or (associative? val) (alist? val))
+        (assoc x k (assoc-in val rest val1)))
        (else (assoc x k (assoc-in (make x) rest val1))))))))
   ((ks1 val1 rest ...) (apply assoc-in (assoc-in x ks1 val1) rest))))
 

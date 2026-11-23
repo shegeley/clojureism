@@ -152,4 +152,41 @@
   (test "update/goops"
     (let ((p (make <point> #:x 3 #:y 4)))
       (is (equal? 4 (get (update p 'x 1+) 'x)))
-      (is (equal? 3 (get p 'x))))))
+      (is (equal? 3 (get p 'x)))))
+
+  ;; alist write support: assoc/assoc-in/update/update-in update alists
+  ;; functionally, keeping alist representation and entry order
+
+  (test "assoc/alist"
+    (let ((before '((a . 1) (b . 2))))
+      (is (equal? '((a . 1) (b . 9)) (assoc before 'b 9)))
+      (is (equal? '((a . 1) (b . 2) (c . 3)) (assoc before 'c 3)))
+      (is (equal? '((a . 1) (b . 5) (c . 3)) (assoc before 'c 3 'b 5)))
+      (is (equal? '((a . 1) (b . 2)) before))
+      (is (equal? '((a . 1)) (assoc '() 'a 1)))))
+
+  (test "assoc-in/alist"
+    (let ((nested '((outer . ((inner . 1) (other . 2))))))
+      (is (equal? '((outer . ((inner . 1) (other . 9))))
+                  (assoc-in nested '(outer other) 9)))
+      (is (equal? '((outer . ((inner . 1) (other . 2) (fresh . 3))))
+                  (assoc-in nested '(outer fresh) 3)))
+      (is (equal? '((outer . ((inner . 1) (other . 2)))) nested)))
+    (is (equal? '((a . ((b . ((c . 1))))))
+                (assoc-in '((a . #f)) '(a b c) 1)))
+    (is (equal? '((a . ((b . 1)))) (assoc-in '() '(a b) 1))))
+
+  (test "assoc-in/mixed alist and hash-table"
+    ;; a hash table nested in an alist stays a hash table
+    (let ((mixed `((config . ,(alist->hash-table* '((mode . quiet)))))))
+      (is (equal? 'loud
+                  (get-in (assoc-in mixed '(config mode) 'loud) '(config mode)))))
+    ;; an alist nested in a hash table stays an alist
+    (let ((t (alist->hash-table* '((opts . ((depth . 1)))))))
+      (is (equal? '((depth . 2)) (get (assoc-in t '(opts depth) 2) 'opts)))))
+
+  (test "update/alist"
+    (is (equal? '((n . 2)) (update '((n . 1)) 'n 1+))))
+
+  (test "update-in/alist"
+    (is (equal? '((a . ((b . 2)))) (update-in '((a . ((b . 1)))) '(a b) 1+)))))
